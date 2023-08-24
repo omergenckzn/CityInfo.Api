@@ -2,6 +2,7 @@
 using CityInfo.Api.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using System.Xml.Linq;
 
 namespace CityInfo.Api.Services
 {
@@ -16,10 +17,42 @@ namespace CityInfo.Api.Services
         }
 
 
-
         public async Task<IEnumerable<City>> GetCitiesAsync()
         {
             return await _context.Cities.OrderBy(c => c.Name).ToListAsync();
+        }
+
+
+
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? name, string? 
+            searchQuery,int pageNumber, int pageSize)
+        {
+
+           
+
+            var collection = _context.Cities as IQueryable<City>;
+
+
+
+
+
+            if(!string.IsNullOrWhiteSpace(name))
+            {
+                name = name.Trim();
+                collection = collection.Where(c => c.Name == name);
+            }
+
+            if(!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                collection = collection.Where(s => s.Name.Contains(searchQuery) 
+                || (s.Description != null && s.Description.Contains(searchQuery)));
+            }
+
+
+            return await collection.OrderBy(c => c.Name).Skip(pageSize * (pageNumber-1)).
+                Take(pageSize).
+                ToListAsync();
 
         }
          
