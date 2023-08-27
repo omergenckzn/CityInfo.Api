@@ -34,7 +34,7 @@ namespace CityInfo.Api.Controllers
 
 
 
-            var cityEntities = await _citiesInfoRepository.GetCitiesAsync(name,searchQuery, GetCitiesAsync(name, searchQuery, pageNumber, pageSize); ;
+            var cityEntities = await _citiesInfoRepository.GetCitiesAsync(name,searchQuery,pageNumber, pageSize);
             
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities));
 
