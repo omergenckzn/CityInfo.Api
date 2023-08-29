@@ -3,8 +3,9 @@ using CityInfo.Api.DbContexts;
 using CityInfo.Api.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
-
+using System.Text;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.
     Console().WriteTo.File("logs/cityinfo.txt", rollingInterval: 
@@ -40,6 +41,16 @@ builder.Services.AddDbContext<CityInfoContext>
     (dbContextOptions => dbContextOptions.UseSqlite("Data Source=CityInfo.db"));
 
 builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+builder.Services.AddAuthentication("Bearer").
+    AddJwtBearer(options => options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Authentication:Issuer"],
+        ValidAudience  = builder.Configuration["Authentication:Audiance"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Authentication:SecretForKey"]))
+    });  
 
 
 
@@ -56,6 +67,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

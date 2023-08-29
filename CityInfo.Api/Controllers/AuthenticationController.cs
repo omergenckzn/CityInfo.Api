@@ -59,7 +59,7 @@ namespace CityInfo.Api.Controllers
                 _configuration["Authentication:Issuer"],
                 _configuration["Authentication:Audiance"],
                 claimsForToken,
-                DateTime.UtcNow,
+                DateTime.UtcNow, 
                 DateTime.UtcNow.AddHours(1),
                 signingCredentials
                 );
