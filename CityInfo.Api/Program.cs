@@ -41,6 +41,15 @@ builder.Services.AddDbContext<CityInfoContext>
     (dbContextOptions => dbContextOptions.UseSqlite("Data Source=CityInfo.db"));
 
 builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
+builder.Services.AddAuthorization(options 
+    => options.
+    AddPolicy("MustBeFromAntwerp", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("city", "Antwerp");
+    }));
+
 builder.Services.AddAuthentication("Bearer").
     AddJwtBearer(options => options.TokenValidationParameters = new()
     {
